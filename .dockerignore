@@ -1,0 +1,17 @@
+.git
+.vscode/
+*creds.py
+~$*
+__pycache__/
+.idea
+data
+*.csv
+creds.py
+*creds*
+*.log
+*.log.*
+*.xlsx
+*.xlsm
+*.pdf
+*.json
+*.drawio

@@ -1,0 +1,35 @@
+[tool.poetry]
+name = "nimbus"
+version = "0.0.1"
+description = ""
+authors = ["Alexis Manuel <alexis.manuelpro@gmail.com>"]
+readme = "README.md"
+package-mode = false
+
+
+[tool.poetry.dependencies]
+python = "^3.12"
+
+
+[tool.poetry.group.dev.dependencies]
+mypy = "^1.3.0"
+pytest-asyncio = "0.21.0"
+pytest-cov = "^4.1.0"
+mock = "^5.0.2"
+pytest = "^7.3.1"
+isort = "^5.12.0"
+freezegun = "^1.2.2"
+ruff = "^0.5.1"
+
+[tool.poe.tasks]
+test = "pytest --cov=app --cov-report term-missing tests"
+run = "python -m app"
+lint = "ruff check app"
+format-check = "ruff format --check app"
+format = "ruff format app"
+sort = "isort app"
+
+[tool.isort]
+profile = "black"
+case_sensitive=true
+line_length=100

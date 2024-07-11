@@ -1,0 +1,16 @@
+.vscode/
+.idea/
+*creds.py
+~$*
+__pycache__
+.idea
+data
+dev
+*.csv
+creds.py
+*creds*
+*.log
+*.log.*
+*.env
+/.mypy_cache/
+.venv
