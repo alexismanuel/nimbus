@@ -22,12 +22,12 @@ freezegun = "^1.2.2"
 ruff = "^0.5.1"
 
 [tool.poe.tasks]
-test = "pytest --cov=app --cov-report term-missing tests"
-run = "python -m app"
-lint = "ruff check app"
-format-check = "ruff format --check app"
-format = "ruff format app"
-sort = "isort app"
+test = "pytest --cov=nimbus --cov-report term-missing tests"
+run = "python -m nimbus"
+lint = "ruff check nimbus"
+format-check = "ruff format --check nimbus"
+format = "ruff format nimbus"
+sort = "isort nimbus"
 
 [tool.isort]
 profile = "black"
