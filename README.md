@@ -1,6 +1,7 @@
-# Nimbus ASGI Server
+# nimbus
+handcrafted asgi toolkit, sky's the limit ☁️
 
-Nimbus is a lightweight, extensible ASGI (Asynchronous Server Gateway Interface) server implemented in Python. It provides a simple yet powerful foundation for building asynchronous web applications and APIs.
+Nimbus is a lightweight, extensible ASGI (Asynchronous Server Gateway Interface) toolkit implemented in Python. It provides a simple yet powerful foundation for building asynchronous web applications and APIs.
 
 ## Features
 
