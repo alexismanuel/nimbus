@@ -1,6 +1,7 @@
 import asyncio
 import logging
 from typing import Optional, Dict, Any, List, Tuple
+from urllib.parse import urlparse
 
 from nimbus.connection import Connection
 from nimbus.applications import ASGIApplication
@@ -53,6 +54,9 @@ class NimbusServer:
         return method, path, headers
 
     def create_scope(self, method: str, path: str, headers: List[Tuple[bytes, bytes]], client_addr: Tuple[str, int]) -> Dict[str, Any]:
+        parsed_url = urlparse(path)
+        path = parsed_url.path
+        query_string = parsed_url.query
         return {
             'type': 'http',
             'asgi': {'version': '3.0', 'spec_version': '2.1'},
@@ -60,7 +64,7 @@ class NimbusServer:
             'method': method,
             'path': path,
             'raw_path': path.encode(),
-            'query_string': b'',
+            'query_string': query_string.encode(),
             'headers': headers,
             'server': (self.host, self.port),
             'client': client_addr,
