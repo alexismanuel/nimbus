@@ -5,11 +5,11 @@ from nimbus.connection import Connection
 
 api_router = Router()
 
-@api_router.route('/hello/<name>', methods=['GET'])
+@api_router.get('/hello/<name>')
 async def hello(connection: Connection, name: str):
     return JsonResponse({'message': f'Hello, {name}!'})
 
-@api_router.route('/echo', methods=['POST'])
+@api_router.post('/echo')
 async def echo(connection: Connection):
     body = await connection.get_body()
     return JsonResponse({'echoed': body.decode()})
@@ -17,6 +17,6 @@ async def echo(connection: Connection):
 
 admin_router = Router()
 
-@admin_router.route('/dashboard')
+@admin_router.get('/dashboard')
 async def admin_dashboard(connection: Connection):
     return HttpResponse("Admin Dashboard")

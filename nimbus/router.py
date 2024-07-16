@@ -9,7 +9,16 @@ class Router:
         self.url_map = Map()
         self.handlers: Dict[str, Callable] = {}
         self.prefix: str = ""
-
+    
+    def get(self, rule: str):
+        return self.route(rule, ['GET'])
+    
+    def post(self, rule: str):
+        return self.route(rule, ['POST'])
+    
+    def patch(self, rule: str):
+        return self.route(rule, ['PATCH'])
+    
     def route(self, rule: str, methods: Optional[List[str]] = None):
         def decorator(handler: Callable):
             self.add_route(rule, handler, methods)
