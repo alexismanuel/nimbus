@@ -1,4 +1,3 @@
-from nimbus.applications import NimbusApp
 from nimbus.router import Router
 from nimbus.response import HttpResponse, JsonResponse
 from nimbus.connection import Connection
