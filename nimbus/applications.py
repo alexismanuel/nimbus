@@ -1,6 +1,7 @@
 import logging
 from abc import ABC, abstractmethod
 from nimbus.connection import Connection
+from nimbus.response import JsonResponse
 
 logger = logging.getLogger(__name__)
 
@@ -14,5 +15,4 @@ class ASGIApplication(ABC):
 class NimbusApp(ASGIApplication):
     async def __call__(self, connection: Connection) -> None:
         name = connection.query_params.get('name', 'World')
-        greeting = f'Hello, {name}!'
-        await connection.send_response(200, greeting, {'Content-Type': 'text/plain'})
+        await JsonResponse(f'Hello, {name}!', connection)

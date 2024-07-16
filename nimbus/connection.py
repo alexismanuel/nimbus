@@ -47,6 +47,7 @@ class Connection:
         if self.started:
             raise ResponseAlreadyStarted("Response already started")
         self.started = True
+        self.response_status = status
         if headers:
             self.response_headers.update({k.encode('ascii'): v.encode('ascii') for k, v in headers.items()})
         await self.send({
