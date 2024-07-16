@@ -16,6 +16,7 @@ class Connection:
         self.finished = False
         self.response_headers: Dict[bytes, bytes] = {}
         self.response_status: int = 200
+        self._body = None
 
     @cached_property
     def headers(self) -> Dict[str, str]:
@@ -32,13 +33,10 @@ class Connection:
         return dict(parse_qsl(self.scope['query_string'].decode()))
 
     async def get_body(self) -> bytes:
-        body = b''
-        more_body = True
-        while more_body:
-            message = await self.receive()
-            body += message.get('body', b'')
-            more_body = message.get('more_body', False)
-        return body
+        if self._body is None:
+            content_length = int(self.headers.get('content-length', '0'))
+            self._body = await self.receive(content_length)
+        return self._body
 
     async def send(self, event: Dict[str, Any]):
         await self._raw_send(event)
