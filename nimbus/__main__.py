@@ -1,4 +1,4 @@
-from nimbus.example import app
+from nimbus.example.app import app
 from nimbus.server import NimbusServer
 import logging
 
