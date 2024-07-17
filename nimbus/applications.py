@@ -5,6 +5,7 @@ from typing import List, Tuple, Optional
 from nimbus.router import Router
 from nimbus.connection import Connection
 from nimbus.response import HttpResponse
+from nimbus.middleware import MiddlewareManager, MiddlewareType
 
 logger = logging.getLogger(__name__)
 
@@ -18,16 +19,23 @@ class ASGIApplication(ABC):
 class NimbusApp(ASGIApplication):
     def __init__(self):
         self.routers: List[Tuple[str, Router]] = []
+        self.middleware_manager = MiddlewareManager()
 
     def mount(self, prefix: str, router: Router):
         router.set_prefix(prefix)
         self.routers.append((prefix, router))
 
+    def add_middleware(self, middleware: MiddlewareType):
+        self.middleware_manager.add_middleware(middleware)
+
     async def __call__(self, connection: Connection):
         path = connection.scope['path']
         for prefix, router in self.routers:
             if path.startswith(prefix):
-                response = await router(connection)
+                response = await self.middleware_manager.apply_middleware(
+                    connection,
+                    lambda: router(connection)
+                )
                 if response:
                     return response
         

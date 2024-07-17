@@ -60,6 +60,37 @@ app.mount('/api', api_router)
 app.mount('/admin', admin_router)
 ```
 
+## Middleware Support
+Nimbus now supports middleware, allowing you to easily add cross-cutting concerns to your application. Here's an example of how to use middleware:
+```python
+import time
+from nimbus.applications import NimbusApp
+from nimbus.response import HttpResponse
+from nimbus.connection import Connection
+
+app = NimbusApp()
+
+# Define a middleware function
+async def timing_middleware(connection: Connection, next_middleware):
+    start_time = time.time()
+    response = await next_middleware()
+    end_time = time.time()
+    print(f"Request to {connection.scope['path']} took {end_time - start_time:.4f} seconds")
+    return response
+
+# Add middleware to the app
+app.add_middleware(timing_middleware)
+
+@app.route('/')
+async def hello(connection):
+    return HttpResponse("Hello, World!")
+
+if __name__ == "__main__":
+    from nimbus.server import NimbusServer
+    NimbusServer(app).run()
+```
+This example adds a simple timing middleware that measures and logs the time taken for each request.
+
 ## Running the Server
 
 To run the Nimbus server:
@@ -80,6 +111,19 @@ To enable SSL, provide the paths to your SSL certificate and key files:
 NimbusServer(app, ssl_certfile='path/to/cert.pem', ssl_keyfile='path/to/key.pem').run()
 ```
 
+## Roadmap
+Here are some key features planned for implementation:
+
+1. ~~**Middleware Support**~~: Implement a middleware system to allow for easy addition of cross-cutting concerns like authentication, logging, or CORS handling. (Completed!)
+
+2. **WebSocket Support**: Add support for WebSocket connections to enable real-time communication in Nimbus applications.
+
+3. **Request Body Parsing**: Implement built-in support for parsing common request body types like JSON, form data, and multipart/form-data.
+
+4. **Improved Error Handling and Logging**: Enhance the error handling system to provide more detailed error responses and improve logging for easier debugging.
+
+5. **Static File Serving**: Add a built-in static file server to easily serve static assets like HTML, CSS, and JavaScript files..
+
 ## Contributing
 
 Contributions to Nimbus are welcome! Please feel free to submit a Pull Request.
@@ -87,3 +131,5 @@ Contributions to Nimbus are welcome! Please feel free to submit a Pull Request.
 ## License
 
 This project is licensed under the MIT License.
+
+
