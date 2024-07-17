@@ -3,101 +3,87 @@ handcrafted asgi toolkit, sky's the limit ☁️
 
 Nimbus is a lightweight, extensible ASGI (Asynchronous Server Gateway Interface) toolkit implemented in Python. It provides a simple yet powerful foundation for building asynchronous web applications and APIs.
 
+
 ## Features
 
-- **ASGI Compliant**: Fully compliant with the ASGI 3.0 specification.
-- **Asynchronous**: Built on Python's asyncio for high performance.
-- **Simple API**: Easy-to-use API for creating ASGI applications.
-- **Extensible**: Designed with extensibility in mind for easy addition of middleware and plugins.
-- **Logging**: Comprehensive logging for debugging and monitoring.
-- **Connection Handling**: Efficient handling of HTTP connections.
-
-## Installation
-
-To install Nimbus, you can use pip:
-
-```bash
-pip install nimbus-asgi # replace with final package name
-```
-
-Note: Not yet published !
+- ASGI-compliant server implementation
+- Modular design with support for mounting multiple applications
+- Built-in routing system with support for HTTP methods and URL parameters
+- Easy-to-use API for handling requests and sending responses
+- SSL support for secure connections
 
 ## Quick Start
 
-Here's a simple example of how to use Nimbus:
+Here's a simple example of how to create and run a Nimbus application:
 
 ```python
 from nimbus.applications import NimbusApp
 from nimbus.server import NimbusServer
+from nimbus.response import HttpResponse
 
-class MyApp(NimbusApp):
-    async def __call__(self, connection):
-        await connection.send_response(200, 'Hello, World!', {'Content-Type': 'text/plain'})
+app = NimbusApp()
+
+@app.route('/')
+async def hello(connection):
+    return HttpResponse("Hello, World!")
 
 if __name__ == "__main__":
-    app = MyApp()
     NimbusServer(app).run()
 ```
 
-This will start a server on `http://localhost:8000` that responds with "Hello, World!" to all requests.
+## Modular Application Structure
 
-## Usage
-
-### Creating an Application
-
-To create a Nimbus application, subclass `NimbusApp`:
+Nimbus supports a modular application structure. You can create multiple routers and mount them to different URL prefixes:
 
 ```python
 from nimbus.applications import NimbusApp
+from nimbus.router import Router
+from nimbus.response import HttpResponse, JsonResponse
 
-class MyApp(NimbusApp):
-    async def __call__(self, connection):
-        # Your application logic here
-        await connection.send_response(200, 'Hello from MyApp!', {'Content-Type': 'text/plain'})
+app = NimbusApp()
+api_router = Router()
+admin_router = Router()
+
+@app.route('/')
+async def index(connection):
+    return HttpResponse("Welcome to the modular Nimbus app!")
+
+@api_router.get('/hello/<name>')
+async def hello(connection, name):
+    return JsonResponse({'message': f'Hello, {name}!'})
+
+@admin_router.get('/dashboard')
+async def admin_dashboard(connection):
+    return HttpResponse("Admin Dashboard")
+
+app.mount('/api', api_router)
+app.mount('/admin', admin_router)
 ```
 
-### Running the Server
+## Running the Server
 
-To run the server with your application:
+To run the Nimbus server:
 
 ```python
 from nimbus.server import NimbusServer
-from myapp import MyApp
+from your_app import app
 
 if __name__ == "__main__":
-    app = MyApp()
-    server = NimbusServer(app, host='0.0.0.0', port=8080)
-    server.run()
+    NimbusServer(app).run()
 ```
 
-## Configuration
+## SSL Support
 
-Nimbus server can be configured with the following parameters:
+To enable SSL, provide the paths to your SSL certificate and key files:
 
-- `host`: The host to bind the server to (default: '127.0.0.1')
-- `port`: The port to bind the server to (default: 8000)
-- `ssl_keyfile`: Path to SSL key file for HTTPS support
-- `ssl_certfile`: Path to SSL certificate file for HTTPS support
-
-## Future Enhancements
-
-- WebSocket support
-- Middleware support
-- Request routing
-- Static file serving
-- Request body parsing for different content types
-- HTTPS support with autocert
-- Performance optimizations
+```python
+NimbusServer(app, ssl_certfile='path/to/cert.pem', ssl_keyfile='path/to/key.pem').run()
+```
 
 ## Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+Contributions to Nimbus are welcome! Please feel free to submit a Pull Request.
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## Acknowledgements
-
-- Inspired by other ASGI servers like Uvicorn and Hypercorn.
-- Built with Python's asyncio library.
+This project is licensed under the MIT License.
