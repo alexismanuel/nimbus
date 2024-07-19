@@ -10,14 +10,12 @@ from nimbus.types import ReceiveCallable, Scope, SendCallable
 
 logger = logging.getLogger(__name__)
 
-
 class ASGIApplication(ABC):
     @abstractmethod
     async def __call__(
         self, scope: Scope, receive: ReceiveCallable, send: SendCallable
     ) -> None:
         pass
-
 
 class NimbusApp(ASGIApplication):
     def __init__(self):
@@ -26,6 +24,8 @@ class NimbusApp(ASGIApplication):
         self.websocket_handlers: Dict[
             str, Callable[[WebSocketConnection], Awaitable[None]]
         ] = {}
+        self.default_router = Router()
+        self.mount("", self.default_router)
 
     def mount(self, prefix: str, router: Router):
         router.set_prefix(prefix)
@@ -38,36 +38,59 @@ class NimbusApp(ASGIApplication):
         def decorator(handler: Callable[[WebSocketConnection], Awaitable[None]]):
             self.websocket_handlers[path] = handler
             return handler
-
         return decorator
 
     async def __call__(self, connection: BaseConnection):
         if isinstance(connection, WebSocketConnection):
-            path = connection.scope["path"]
-            handler = self.websocket_handlers.get(path)
-            if handler:
-                await handler(connection)
-            else:
-                await connection.close()
+            await self._handle_websocket(connection)
         elif isinstance(connection, HttpConnection):
-            path = connection.scope["path"]
-            for prefix, router in self.routers:
-                if path.startswith(prefix):
+            return await self._handle_http(connection)
+
+    async def _handle_websocket(self, connection: WebSocketConnection):
+        path = connection.scope["path"]
+        logger.info(f"Handling WebSocket connection for path: {path}")
+        handler = self.websocket_handlers.get(path)
+        if handler:
+            await handler(connection)
+        else:
+            logger.warning(f"No WebSocket handler found for path: {path}")
+            await connection.close()
+
+    async def _handle_http(self, connection: HttpConnection):
+        path = connection.scope["path"]
+        method = connection.scope["method"]
+        logger.info(f"Handling {method} request for path: {path}")
+        
+        for prefix, router in self.routers:
+            logger.debug(f"Checking router with prefix: '{prefix}'")
+            if path.startswith(prefix):
+                logger.debug(f"Attempting to route request with router: '{prefix}'")
+                try:
                     response = await self.middleware_manager.apply_middleware(
                         connection, lambda: router(connection)
                     )
                     if response:
+                        logger.debug(f"Router '{prefix}' handled the request")
                         return response
+                except Exception as e:
+                    logger.error(f"Error in router '{prefix}': {str(e)}", exc_info=True)
 
-            # If no router handled the request, return a 404
-            return await HttpResponse(
-                "Not Found",
-                connection,
-                headers={"Content-Type": "text/plain"},
-                status_code=404,
-            )
+        logger.warning(f"No router handled the request for path: {path}")
+        return await HttpResponse(
+            "Not Found",
+            connection,
+            headers={"Content-Type": "text/plain"},
+            status_code=404,
+        )
 
     def route(self, rule: str, methods: Optional[List[str]] = None):
-        router = Router()
-        self.mount("", router)
-        return router.route(rule, methods)
+        return self.default_router.route(rule, methods)
+
+    def get(self, rule: str):
+        return self.route(rule, ["GET"])
+
+    def post(self, rule: str):
+        return self.route(rule, ["POST"])
+
+    def patch(self, rule: str):
+        return self.route(rule, ["PATCH"])

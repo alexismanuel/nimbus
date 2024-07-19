@@ -1,9 +1,10 @@
-from typing import AsyncIterator, Dict, Optional, Union
+from typing import AsyncIterator, Dict, Optional, Union, Any
 
 from nimbus.exceptions import ResponseAlreadyStarted
 from nimbus.types import ReceiveCallable, Scope, SendCallable
+from nimbus.server.body_parser import BodyParser
 
-from .base import BaseConnection
+from nimbus.connections.base import BaseConnection
 
 
 class HttpConnection(BaseConnection):
@@ -14,12 +15,19 @@ class HttpConnection(BaseConnection):
         self.response_headers: Dict[bytes, bytes] = {}
         self.response_status: int = 200
         self._body = None
+        self._parsed_body = None
 
     async def get_body(self) -> bytes:
         if self._body is None:
             content_length = int(self.headers.get("content-length", "0"))
             self._body = await self.receive(content_length)
         return self._body
+
+    async def get_parsed_body(self) -> Optional[Dict[str, Any]]:
+        if self._parsed_body is None:
+            body = await self.get_body()
+            self._parsed_body = await BodyParser.parse(self.headers, body)
+        return self._parsed_body
 
     async def send_response(
         self,

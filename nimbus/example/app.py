@@ -5,12 +5,11 @@ import time
 from nimbus.applications import NimbusApp
 from nimbus.connections import HttpConnection, WebSocketConnection
 from nimbus.example.routers import admin_router, api_router
-from nimbus.response import HttpResponse
+from nimbus.response import HttpResponse, JsonResponse
 
 logger = logging.getLogger(__name__)
 
 app = NimbusApp()
-
 
 async def timing_middleware(connection: HttpConnection, next_middleware):
     start_time = time.time()
@@ -21,17 +20,21 @@ async def timing_middleware(connection: HttpConnection, next_middleware):
     )
     return response
 
-
 app.add_middleware(timing_middleware)
 
 app.mount("/api", api_router)
 app.mount("/admin", admin_router)
 
-
-@app.route("/")
+@app.get("/")
 async def index(connection: HttpConnection):
     return HttpResponse("Welcome to the modular Nimbus app!")
 
+@app.post("/echo")
+async def echo(connection: HttpConnection):
+    parsed_body = await connection.get_parsed_body()
+    if parsed_body is None:
+        return JsonResponse({"error": "Invalid or unsupported content type"}, status_code=400)
+    return JsonResponse({"echoed": parsed_body})
 
 @app.websocket("/ws")
 async def websocket_endpoint(connection: WebSocketConnection):

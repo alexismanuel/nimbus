@@ -118,7 +118,7 @@ Here are some key features planned for implementation:
 
 2. ~~**WebSocket Support**~~: Add support for WebSocket connections to enable real-time communication in Nimbus applications.
 
-3. **Request Body Parsing**: Implement built-in support for parsing common request body types like JSON, form data, and multipart/form-data.
+3. ~~**Request Body Parsing**~~: Implement built-in support for parsing common request body types like JSON, form data, and multipart/form-data.
 
 4. **Improved Error Handling and Logging**: Enhance the error handling system to provide more detailed error responses and improve logging for easier debugging.
 
