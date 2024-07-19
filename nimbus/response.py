@@ -1,17 +1,17 @@
 import json
-from typing import Union, Optional, Mapping, Any
+from typing import Any, Mapping, Optional, Union
 
-from nimbus.connection import Connection
+from nimbus.connections import HttpConnection
 
 
 class HttpResponse:
     def __init__(
         self,
         body: Optional[Union[bytes, str]] = b"",
-        connection: Optional[Connection] = None,
+        connection: Optional[HttpConnection] = None,
         *,
         status_code: int = 200,
-        headers: Optional[Mapping[str, str]] = None
+        headers: Optional[Mapping[str, str]] = None,
     ):
         self.body = body
         self.connection = connection
@@ -21,12 +21,14 @@ class HttpResponse:
     def __await__(self):
         if not self.connection:
             raise ValueError("No connection")
-        return self.connection.send_response(self.status_code, self.body, self.headers).__await__()
+        return self.connection.send_response(
+            self.status_code, self.body, self.headers
+        ).__await__()
 
 
 class JsonResponse(HttpResponse):
     def __init__(
-        self, data: Any, connection: Optional[Connection] = None, *args, **kwargs
+        self, data: Any, connection: Optional[HttpConnection] = None, *args, **kwargs
     ):
         body = json.dumps(data)
         headers = kwargs.get("headers")

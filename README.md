@@ -116,7 +116,7 @@ Here are some key features planned for implementation:
 
 1. ~~**Middleware Support**~~: Implement a middleware system to allow for easy addition of cross-cutting concerns like authentication, logging, or CORS handling. (Completed!)
 
-2. **WebSocket Support**: Add support for WebSocket connections to enable real-time communication in Nimbus applications.
+2. ~~**WebSocket Support**~~: Add support for WebSocket connections to enable real-time communication in Nimbus applications.
 
 3. **Request Body Parsing**: Implement built-in support for parsing common request body types like JSON, form data, and multipart/form-data.
 
