@@ -1,10 +1,9 @@
-from typing import AsyncIterator, Dict, Optional, Union, Any
-
-from nimbus.exceptions import ResponseAlreadyStarted
-from nimbus.types import ReceiveCallable, Scope, SendCallable
-from nimbus.server.body_parser import BodyParser
+from typing import Any, AsyncIterator, Dict, Optional, Union
 
 from nimbus.connections.base import BaseConnection
+from nimbus.exceptions import ResponseAlreadyStarted
+from nimbus.server.body_parser import BodyParser
+from nimbus.types import ReceiveCallable, Scope, SendCallable
 
 
 class HttpConnection(BaseConnection):

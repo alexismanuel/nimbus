@@ -14,3 +14,4 @@ creds.py
 *.env
 /.mypy_cache/
 .venv
+*.sh

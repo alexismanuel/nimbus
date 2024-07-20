@@ -39,6 +39,4 @@ class ErrorHandler:
     async def _handle_unknown_error(
         self, error: Exception, client_addr: Tuple[str, int]
     ) -> None:
-        logger.error(
-            f"Error handling connection from {client_addr}: {str(error)}", exc_info=True
-        )
+        logger.error(f"Error handling connection from {client_addr}. {str(error)}")

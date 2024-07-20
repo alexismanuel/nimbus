@@ -10,12 +10,14 @@ from nimbus.types import ReceiveCallable, Scope, SendCallable
 
 logger = logging.getLogger(__name__)
 
+
 class ASGIApplication(ABC):
     @abstractmethod
     async def __call__(
         self, scope: Scope, receive: ReceiveCallable, send: SendCallable
     ) -> None:
-        pass
+        raise NotImplementedError()
+
 
 class NimbusApp(ASGIApplication):
     def __init__(self):
@@ -38,6 +40,7 @@ class NimbusApp(ASGIApplication):
         def decorator(handler: Callable[[WebSocketConnection], Awaitable[None]]):
             self.websocket_handlers[path] = handler
             return handler
+
         return decorator
 
     async def __call__(self, connection: BaseConnection):
@@ -50,17 +53,16 @@ class NimbusApp(ASGIApplication):
         path = connection.scope["path"]
         logger.info(f"Handling WebSocket connection for path: {path}")
         handler = self.websocket_handlers.get(path)
-        if handler:
-            await handler(connection)
-        else:
+        if not handler:
             logger.warning(f"No WebSocket handler found for path: {path}")
-            await connection.close()
+            return await connection.close()
+        return await handler(connection)
 
-    async def _handle_http(self, connection: HttpConnection):
+    async def _handle_http(self, connection: HttpConnection) -> HttpResponse:
         path = connection.scope["path"]
         method = connection.scope["method"]
         logger.info(f"Handling {method} request for path: {path}")
-        
+
         for prefix, router in self.routers:
             logger.debug(f"Checking router with prefix: '{prefix}'")
             if path.startswith(prefix):
@@ -71,17 +73,25 @@ class NimbusApp(ASGIApplication):
                     )
                     if response:
                         logger.debug(f"Router '{prefix}' handled the request")
-                        return response
+                        return await self._process_http_response(response, connection)
                 except Exception as e:
-                    logger.error(f"Error in router '{prefix}': {str(e)}", exc_info=True)
+                    logger.error(f"Error in router '{prefix}'. {str(e)}")
 
         logger.warning(f"No router handled the request for path: {path}")
-        return await HttpResponse(
+        response = HttpResponse(
             "Not Found",
             connection,
             headers={"Content-Type": "text/plain"},
             status_code=404,
         )
+        return await self._process_http_response(response, connection)
+
+    async def _process_http_response(
+        self, response: HttpResponse, connection: HttpConnection
+    ) -> HttpResponse:
+        response.connection = connection
+        await response
+        return response
 
     def route(self, rule: str, methods: Optional[List[str]] = None):
         return self.default_router.route(rule, methods)
