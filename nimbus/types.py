@@ -14,7 +14,7 @@ Scope = TypedDict(
 )
 
 ReceiveCallable = Callable[[], Any]
-SendCallable = Callable[[Dict[str, Any]], None]
+SendCallable = Callable[[Dict[str, Any]], Awaitable[None]]
 
 
 class BaseConnection(Protocol):
