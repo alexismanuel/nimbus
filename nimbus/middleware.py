@@ -1,8 +1,6 @@
 from typing import Awaitable, Callable, List
 
-from nimbus.connections import BaseConnection
-from nimbus.response import HttpResponse
-from nimbus.types import MiddlewareType
+from nimbus.types import BaseConnection, HttpResponse, MiddlewareType
 
 
 class MiddlewareManager:
