@@ -1,6 +1,6 @@
 from functools import cached_property
 from http.cookies import SimpleCookie
-from typing import Any, Dict
+from typing import Any
 from urllib.parse import parse_qsl
 
 from nimbus.types import ReceiveCallable, Scope, SendCallable
@@ -13,7 +13,7 @@ class BaseConnection:
         self._raw_send = send
 
     @cached_property
-    def headers(self) -> Dict[str, str]:
+    def headers(self) -> dict[str, str]:
         return {k.decode("ascii"): v.decode("ascii") for k, v in self.scope["headers"]}
 
     @cached_property
@@ -23,8 +23,8 @@ class BaseConnection:
         return cookie
 
     @cached_property
-    def query_params(self) -> Dict[str, str]:
+    def query_params(self) -> dict[str, str]:
         return dict(parse_qsl(self.scope["query_string"].decode()))
 
-    async def send(self, event: Dict[str, Any]) -> None:
+    async def send(self, event: dict[str, Any]) -> None:
         await self._raw_send(event)

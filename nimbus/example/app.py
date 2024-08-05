@@ -1,3 +1,4 @@
+from collections.abc import Awaitable, Callable
 import json
 import logging
 import time
@@ -12,7 +13,7 @@ logger = logging.getLogger(__name__)
 app = NimbusApp()
 
 
-async def timing_middleware(connection: HttpConnection, next_middleware):
+async def timing_middleware(connection: HttpConnection, next_middleware: Callable[[], Awaitable[HttpResponse | None]]):
     start_time = time.time()
     response = await next_middleware()
     end_time = time.time()

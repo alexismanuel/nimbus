@@ -1,5 +1,5 @@
 import logging
-from typing import Any, Callable, Dict, List, Optional, Type
+from typing import Any, Callable, Optional, Type
 
 from werkzeug.routing import Map, MapAdapter, Rule
 
@@ -10,15 +10,15 @@ logger = logging.getLogger(__name__)
 
 
 class Router:
-    CONNECTION_HANDLERS: Dict[Type[BaseConnection], str] = {
+    CONNECTION_HANDLERS: dict[Type[BaseConnection], str] = {
         HttpConnection: "_handle_http_connection",
         WebSocketConnection: "_handle_websocket_connection",
     }
 
     def __init__(self):
         self.url_map = Map()
-        self.handlers: Dict[str, Callable] = {}
-        self.websocket_handlers: Dict[str, Callable] = {}
+        self.handlers: dict[str, Callable] = {}
+        self.websocket_handlers: dict[str, Callable] = {}
         self.prefix: str = ""
 
     def get(self, rule: str):
@@ -30,7 +30,7 @@ class Router:
     def patch(self, rule: str):
         return self.route(rule, ["PATCH"])
 
-    def route(self, rule: str, methods: Optional[List[str]] = None):
+    def route(self, rule: str, methods: Optional[list[str]] = None):
         def decorator(handler: Callable):
             self.add_route(rule, handler, methods)
             return handler
@@ -47,7 +47,7 @@ class Router:
         return decorator
 
     def add_route(
-        self, rule: str, handler: Callable, methods: Optional[List[str]] = None
+        self, rule: str, handler: Callable, methods: Optional[list[str]] = None
     ):
         endpoint = f"{rule}:{','.join(methods or [])}"
         full_rule = self.prefix + rule if not rule.startswith("/") else rule

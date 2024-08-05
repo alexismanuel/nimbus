@@ -1,29 +1,26 @@
 import logging
 from abc import ABC, abstractmethod
-from typing import Awaitable, Callable, Dict, List, Optional, Tuple
+from typing import Awaitable, Callable, Optional
 
 from nimbus.connections import BaseConnection, HttpConnection, WebSocketConnection
 from nimbus.middleware import MiddlewareManager, MiddlewareType
 from nimbus.response import HttpResponse
 from nimbus.router import Router
-from nimbus.types import ReceiveCallable, Scope, SendCallable
 
 logger = logging.getLogger(__name__)
 
 
 class ASGIApplication(ABC):
     @abstractmethod
-    async def __call__(
-        self, scope: Scope, receive: ReceiveCallable, send: SendCallable
-    ) -> None:
+    async def __call__(self, connection: BaseConnection) -> HttpResponse | None:
         raise NotImplementedError()
 
 
 class NimbusApp(ASGIApplication):
     def __init__(self):
-        self.routers: List[Tuple[str, Router]] = []
+        self.routers: list[tuple[str, Router]] = []
         self.middleware_manager = MiddlewareManager()
-        self.websocket_handlers: Dict[
+        self.websocket_handlers: dict[
             str, Callable[[WebSocketConnection], Awaitable[None]]
         ] = {}
         self.default_router = Router()
@@ -43,13 +40,13 @@ class NimbusApp(ASGIApplication):
 
         return decorator
 
-    async def __call__(self, connection: BaseConnection):
+    async def __call__(self, connection: BaseConnection) -> HttpResponse | None:
         if isinstance(connection, WebSocketConnection):
             await self._handle_websocket(connection)
         elif isinstance(connection, HttpConnection):
             return await self._handle_http(connection)
 
-    async def _handle_websocket(self, connection: WebSocketConnection):
+    async def _handle_websocket(self, connection: WebSocketConnection) -> None:
         path = connection.scope["path"]
         logger.info(f"Handling WebSocket connection for path: {path}")
         handler = self.websocket_handlers.get(path)
@@ -58,7 +55,7 @@ class NimbusApp(ASGIApplication):
             return await connection.close()
         return await handler(connection)
 
-    async def _handle_http(self, connection: HttpConnection) -> HttpResponse:
+    async def _handle_http(self, connection: HttpConnection) -> Optional[HttpResponse]:
         path = connection.scope["path"]
         method = connection.scope["method"]
         logger.info(f"Handling {method} request for path: {path}")
@@ -93,7 +90,7 @@ class NimbusApp(ASGIApplication):
         await response
         return response
 
-    def route(self, rule: str, methods: Optional[List[str]] = None):
+    def route(self, rule: str, methods: Optional[list[str]] = None):
         return self.default_router.route(rule, methods)
 
     def get(self, rule: str):

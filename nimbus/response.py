@@ -1,5 +1,5 @@
 import json
-from typing import Any, Mapping, Optional, Union
+from typing import Any, Optional, Union
 
 from nimbus.connections import HttpConnection
 
@@ -7,11 +7,11 @@ from nimbus.connections import HttpConnection
 class HttpResponse:
     def __init__(
         self,
-        body: Optional[Union[bytes, str]] = b"",
+        body: Union[bytes, str] = b"",
         connection: Optional[HttpConnection] = None,
         *,
         status_code: int = 200,
-        headers: Optional[Mapping[str, str]] = None,
+        headers: Optional[dict[str, str]] = None,
     ):
         self.body = body
         self.connection = connection

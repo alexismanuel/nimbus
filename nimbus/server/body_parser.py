@@ -1,13 +1,13 @@
 import json
-from typing import Any, Dict, Optional
+from typing import Any, Optional
 from urllib.parse import parse_qs
 
 
 class BodyParser:
     @classmethod
     async def parse(
-        cls, headers: Dict[str, str], body: bytes
-    ) -> Optional[Dict[str, Any]]:
+        cls, headers: dict[str, str], body: bytes
+    ) -> Optional[dict[str, Any]]:
         content_type = headers.get("content-type", "")
 
         if "application/json" in content_type:
@@ -18,14 +18,14 @@ class BodyParser:
             return None
 
     @classmethod
-    async def _parse_json(cls, body: bytes) -> Dict[str, Any]:
+    async def _parse_json(cls, body: bytes) -> dict[str, Any]:
         try:
             return json.loads(body.decode("utf-8"))
         except json.JSONDecodeError:
             raise ValueError("Invalid JSON in request body")
 
     @classmethod
-    async def _parse_form_data(cls, body: bytes) -> Dict[str, Any]:
+    async def _parse_form_data(cls, body: bytes) -> dict[str, Any]:
         decoded = body.decode("utf-8")
         parsed = parse_qs(decoded)
         return {

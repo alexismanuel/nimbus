@@ -20,7 +20,7 @@ class WebSocketConnection(BaseConnection):
         await self.send({"type": "websocket.send", event_type: message})
 
     async def receive_message(self) -> Optional[Union[str, bytes]]:
-        event = await self.receive()
+        event = await self.receive(None)
         if event["type"] == "websocket.receive":
             return event.get("text") or event.get("bytes")
         if event["type"] == "websocket.disconnect":

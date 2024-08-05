@@ -1,6 +1,6 @@
 import asyncio
 import logging
-from typing import Optional, Tuple
+from typing import Optional
 
 from nimbus.applications import ASGIApplication
 from nimbus.connections import create_connection
@@ -53,7 +53,7 @@ class NimbusServer:
         self,
         reader: asyncio.StreamReader,
         writer: asyncio.StreamWriter,
-        client_addr: Tuple[str, int],
+        client_addr: tuple[str, int],
     ) -> None:
         method, path, headers = await self.request_parser.parse_request(reader)
         scope = self.request_parser.create_scope(
@@ -89,7 +89,7 @@ class NimbusServer:
         )
 
     async def _close_connection(
-        self, writer: asyncio.StreamWriter, client_addr: Tuple[str, int]
+        self, writer: asyncio.StreamWriter, client_addr: tuple[str, int]
     ) -> None:
         logger.debug(f"Closing connection from {client_addr}")
         writer.close()

@@ -1,5 +1,5 @@
 import logging
-from typing import Dict, Optional, Type
+from typing import Optional, Type
 
 from nimbus.connections import BaseConnection, HttpConnection, WebSocketConnection
 from nimbus.response import HttpResponse
@@ -8,7 +8,7 @@ logger = logging.getLogger(__name__)
 
 
 class ConnectionHandler:
-    CONNECTION_HANDLERS: Dict[Type[BaseConnection], str] = {
+    CONNECTION_HANDLERS: dict[Type[BaseConnection], str] = {
         HttpConnection: "_handle_http_connection",
         WebSocketConnection: "_handle_websocket_connection",
     }

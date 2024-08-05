@@ -1,11 +1,14 @@
-from typing import Any, Awaitable, Callable, Dict, TypedDict
-
-from typing_extensions import Protocol
+from typing import Any, Awaitable, Callable, TypedDict
 
 Scope = TypedDict(
     "Scope",
     {
         "type": str,
+        "asgi": dict[str, Any],
+        "http_version": str,
+        "raw_path": bytes,
+        "server": tuple[str, int],
+        "client": tuple[str, int],
         "path": str,
         "headers": list[tuple[bytes, bytes]],
         "method": str,
@@ -13,20 +16,6 @@ Scope = TypedDict(
     },
 )
 
-ReceiveCallable = Callable[[], Any]
-SendCallable = Callable[[Dict[str, Any]], Awaitable[None]]
+ReceiveCallable = Callable[[int | None], Any]
+SendCallable = Callable[[dict[str, Any]], Awaitable[None]]
 
-
-class BaseConnection(Protocol):
-    scope: Scope
-    receive: ReceiveCallable
-    send: SendCallable
-
-
-class HttpResponse(Protocol):
-    pass
-
-
-MiddlewareType = Callable[
-    [BaseConnection, Callable[[], Awaitable[HttpResponse]]], Awaitable[HttpResponse]
-]

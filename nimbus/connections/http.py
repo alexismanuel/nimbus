@@ -1,4 +1,4 @@
-from typing import Any, AsyncIterator, Dict, Optional, Union
+from typing import Any, AsyncIterator, Optional, Union
 
 from nimbus.connections.base import BaseConnection
 from nimbus.exceptions import ResponseAlreadyStarted
@@ -11,7 +11,7 @@ class HttpConnection(BaseConnection):
         super().__init__(scope, receive, send)
         self.started = False
         self.finished = False
-        self.response_headers: Dict[bytes, bytes] = {}
+        self.response_headers: dict[bytes, bytes] = {}
         self.response_status: int = 200
         self._body = None
         self._parsed_body = None
@@ -22,7 +22,7 @@ class HttpConnection(BaseConnection):
             self._body = await self.receive(content_length)
         return self._body
 
-    async def get_parsed_body(self) -> Optional[Dict[str, Any]]:
+    async def get_parsed_body(self) -> Optional[dict[str, Any]]:
         if self._parsed_body is None:
             body = await self.get_body()
             self._parsed_body = await BodyParser.parse(self.headers, body)
@@ -32,7 +32,7 @@ class HttpConnection(BaseConnection):
         self,
         status: int,
         body: Union[str, bytes],
-        headers: Optional[Dict[str, str]] = None,
+        headers: Optional[dict[str, str]] = None,
     ) -> None:
         self._ensure_response_not_started()
         self._prepare_response(status, headers)
@@ -45,7 +45,7 @@ class HttpConnection(BaseConnection):
             raise ResponseAlreadyStarted("Response already started")
         self.started = True
 
-    def _prepare_response(self, status: int, headers: Optional[Dict[str, str]]) -> None:
+    def _prepare_response(self, status: int, headers: Optional[dict[str, str]]) -> None:
         self.response_status = status
         if headers:
             self.response_headers.update(
@@ -72,7 +72,7 @@ class HttpConnection(BaseConnection):
         self,
         status: int,
         body_iterator: AsyncIterator[Union[str, bytes]],
-        headers: Optional[Dict[str, str]] = None,
+        headers: Optional[dict[str, str]] = None,
     ) -> None:
         self._ensure_response_not_started()
         self._prepare_response(status, headers)

@@ -1,5 +1,4 @@
 import asyncio
-from typing import List, Tuple
 from urllib.parse import urlparse
 
 from nimbus.types import Scope
@@ -8,7 +7,7 @@ from nimbus.types import Scope
 class RequestParser:
     async def parse_request(
         self, reader: asyncio.StreamReader
-    ) -> Tuple[str, str, List[Tuple[bytes, bytes]]]:
+    ) -> tuple[str, str, list[tuple[bytes, bytes]]]:
         request_line = await reader.readline()
         method, path, _ = request_line.decode().strip().split()
         headers = await self._parse_headers(reader)
@@ -16,7 +15,7 @@ class RequestParser:
 
     async def _parse_headers(
         self, reader: asyncio.StreamReader
-    ) -> List[Tuple[bytes, bytes]]:
+    ) -> list[tuple[bytes, bytes]]:
         headers = []
         while True:
             line = await reader.readline()
@@ -30,9 +29,9 @@ class RequestParser:
         self,
         method: str,
         path: str,
-        headers: List[Tuple[bytes, bytes]],
-        server: Tuple[str, int],
-        client: Tuple[str, int],
+        headers: list[tuple[bytes, bytes]],
+        server: tuple[str, int],
+        client: tuple[str, int],
     ) -> Scope:
         parsed_url = urlparse(path)
         return {
