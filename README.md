@@ -124,6 +124,8 @@ Here are some key features planned for implementation:
 
 5. **Static File Serving**: Add a built-in static file server to easily serve static assets like HTML, CSS, and JavaScript files..
 
+6. **Unit Tests Coverage**: Add unit tests and testing utilities
+
 ## Contributing
 
 Contributions to Nimbus are welcome! Please feel free to submit a Pull Request.

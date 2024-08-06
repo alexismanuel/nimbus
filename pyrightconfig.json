@@ -1,4 +1,13 @@
 {
 	"venvPath": ".",
-	"venv": ".venv"
+	"venv": ".venv",
+    "exclude": [
+        "**/tests/**",
+		"**/__pycache__",
+		"./.venv/**",
+    ],
+	"enableReachabilityAnalysis": true,
+    "typeCheckingMode": "standard",
+	"useLibraryCodeForTypes": true,
+	"autoImportCompletions": true,
 }

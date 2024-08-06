@@ -16,6 +16,5 @@ Scope = TypedDict(
     },
 )
 
-ReceiveCallable = Callable[[int | None], Any]
+ReceiveCallable = Callable[[int], Any]
 SendCallable = Callable[[dict[str, Any]], Awaitable[None]]
-

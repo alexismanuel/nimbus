@@ -77,7 +77,7 @@ class NimbusServer:
             writer,
             {
                 "type": "http.response.start",
-                "status": response.status,
+                "status": response.status_code,
                 "headers": [
                     (k.encode(), v.encode()) for k, v in response.headers.items()
                 ],

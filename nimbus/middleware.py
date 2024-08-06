@@ -4,8 +4,9 @@ from nimbus.connections.http import HttpConnection
 from nimbus.response import HttpResponse
 
 MiddlewareHandlerType = Callable[[], Awaitable[HttpResponse | None]]
-MiddlewareType = Callable[[HttpConnection, MiddlewareHandlerType], Awaitable[HttpResponse | None]]
-
+MiddlewareType = Callable[
+    [HttpConnection, MiddlewareHandlerType], Awaitable[HttpResponse | None]
+]
 
 
 class MiddlewareManager:
@@ -16,7 +17,7 @@ class MiddlewareManager:
         self.middlewares.append(middleware)
 
     async def apply_middleware(
-            self, connection: HttpConnection, handler: MiddlewareHandlerType
+        self, connection: HttpConnection, handler: MiddlewareHandlerType
     ) -> HttpResponse | None:
         async def middleware_chain(index: int) -> HttpResponse | None:
             if index < len(self.middlewares):

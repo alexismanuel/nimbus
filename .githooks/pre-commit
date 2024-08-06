@@ -3,7 +3,7 @@
 echo "Running pre-commit hook ..."
 
 # Launch lint
-lint_output=$(poe lint -v)
+lint_output=$(poe lint-check)
 lint_exit_code=$?
 
 if [ $lint_exit_code -eq 0 ]
@@ -16,7 +16,7 @@ else
 fi
 
 # Launch type check
-type_check_output=$(./scripts/type-check.sh)
+type_check_output=$(poe type-check)
 type_check_exit_code=$?
 
 if [ $type_check_exit_code -eq 0 ]
@@ -29,7 +29,7 @@ else
 fi
 
 # Launch format check
-format_outpout=$(poe format-check -v)
+format_outpout=$(poe format-check)
 format_exit_code=$?
 
 if [ $format_exit_code -eq 0 ]

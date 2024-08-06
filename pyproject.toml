@@ -25,8 +25,9 @@ ruff = "^0.5.1"
 [tool.poe.tasks]
 test = "pytest --cov=nimbus --cov-report term-missing tests"
 run = "python -m nimbus.example"
-lint = "ruff check nimbus"
+lint-check = "ruff check nimbus"
 format-check = "ruff format --check nimbus"
+type-check = "basedpyright nimbus"
 format = "ruff format nimbus"
 sort = "isort nimbus"
 

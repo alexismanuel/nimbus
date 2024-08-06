@@ -11,7 +11,7 @@ class HttpResponse:
         connection: Optional[HttpConnection] = None,
         *,
         status_code: int = 200,
-        headers: Optional[dict[str, str]] = None,
+        headers: dict[str, str] = {},
     ):
         self.body = body
         self.connection = connection

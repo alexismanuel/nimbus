@@ -20,4 +20,3 @@ def create_connection(
     if connection_class is None:
         raise UnsupportedConnectionType(f"Unsupported connection type: {scope['type']}")
     return connection_class(scope, receive, send)
-
